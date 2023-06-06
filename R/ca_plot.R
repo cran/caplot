@@ -1,10 +1,11 @@
 #' Correspondence Analysis with Geometric Frequency Interpretation
 #'
 #' @description This function performs Correspondence Analysis on the given data frame and plots the results in a scatterplot that emphasizes
-#' the geometric interpretation aspect of the analysis (Yelland 2010). It is particularly useful for highlighting the relationships between
-#' a selected row (or column) category and the column (or row) categories.
+#' the geometric interpretation aspect of the analysis (Borg-Groenen 2005; Yelland 2010). It is particularly useful for highlighting the relationships between
+#' a selected row (or column) category and the column (or row) categories.\cr
+#' Visit this \href{https://drive.google.com/file/d/1sZKPEqOqQ7VpfIn9DnGgdrS_K8p7cbvf/view?usp=share_link}{LINK} to access the package's vignette.\cr
 #'
-#' @details \strong{Overview}\cr The function follows a visualization approach outlined by Yelland 2010.
+#' @details \strong{Overview}\cr The function follows a visualization approach outlined, e.g., by Borg-Groenen 2005 and Yelland 2010.
 #' This method allows the relative frequencies of categories in the dataset to be intuitively read off the plot.
 #' The function first draws a line through the origin and the point corresponding to the selected reference category.
 #' Perpendicular lines are then dropped from each category’s position on the plot to the line connecting the reference category and the origin.
@@ -25,11 +26,16 @@
 #' @param df A cross-tabulation (dataframe) for which the correspondence analysis is performed.
 #' @param dims A numeric vector specifying the dimensions to be plotted (default: c(1,2)).
 #' @param ref.category The reference category for interpreting the plot. Must be a row or column name of the input dataframe.
+#' Note that, to enhance visual focus on the selected category, the other categories are rendered in grey.
+#' @param dot.size A numerical value representing the size of dots in the plot (default: 2)
 #' @param label.size A numerical value representing the size of labels in the plot (default: 3).
-#' @param equal.scale Logical value indicating whether to use the same scale for both axes (default: TRUE).
 #' @param axis.title.size A numerical value specifying the size of the axis titles (default: 8).
+#' @param equal.scale Logical value indicating whether to use the same scale for both axes (default: TRUE).
 #'
 #' @return A scatterplot visualizing the results of the Correspondence Analysis with geometric frequency interpretation.
+#'
+#' @references Borg, I., & Groenen, P. J. F. (2005). Modern Multidimensional Scaling: Theory and Applications.
+#' Springer Science & Business Media.
 #'
 #' @references Yelland, P. (2010). An Introduction to Correspondence Analysis.
 #'  In The Mathematica Journal (Vol. 12). Wolfram Research, Inc.
@@ -43,7 +49,7 @@
 #' @examples
 #'
 #' # EXAMPLE 1
-#' # Build a toy dataset (the famous Greenacre's "smoke" dataset)
+#' # Build a toy dataset (the famous Greenacre's "smoke" dataset).
 #'
 #' mytable <- structure(list(none = c(4, 4, 25, 18, 10), light = c(2, 3, 10,
 #' 24, 6), medium = c(3, 7, 12, 33, 7), heavy = c(2, 4, 4, 13, 2
@@ -54,8 +60,8 @@
 #' caplot(mytable, ref.category="heavy")
 #'
 #' # In the returned scatterplot, it can be seen that the JM and SM categories
-#' # feature a (comparatively) higher proportion of heavy smokers, whereas SC,
-#' # SE, and JE feature a smaller proportion.
+#' # feature a larger-than-average proportion of heavy smokers, whereas SC,
+#' # SE, and JE feature a smaller-than-average proportion.
 #' # Also, JM intersects the reference category line at a larger
 #' # distance compared to the SM category, which indicates that the proportion
 #' # of heavy smokers in JM is larger than in SM.
@@ -68,15 +74,29 @@
 #'
 #' # EXAMPLE 2
 #' # Run the function using the "yelland" in-built dataset and "MT2" (Mark Twain 2)
-#' # as reference category, so reproducing the scatterplot in Yelland 2010, figure 4
+#' # as reference category, so reproducing the scatterplot in Yelland 2010, figure 4.
 #'
 #' caplot(yelland, ref.category="MT2", label.size=2)
 #'
 #'
+#' # EXAMPLE 3
+#' # Run the function using the "borggroenen" in-built dataset and "MA"
+#' # as reference category, so reproducing the scatterplot in Borg-Groenen 2005, figure 24.9.
 #'
-caplot <- function(df, dims = c(1,2), ref.category, label.size = 3, equal.scale = TRUE, axis.title.size = 8) {
+#' caplot(borggroenen, ref.category="MA", label.size=2)
+#'
+#' # As noted by Borg-Groenen 2005:
+#' # "the projections on the line through the origin and MA (Massachusetts)
+#' # show that auto theft and robbery happen more often than average.
+#' # Because larceny and burglary project almost on the origin,
+#' # they occur at an average rate in Massachusetts, whereas murder,
+#' # rape, and assault are below average."
+#'
+#'
+#'
+caplot <- function(df, dims = c(1,2), ref.category, dot.size = 2, label.size = 3, axis.title.size = 8, equal.scale = TRUE) {
 
-  Dim1=Dim2=ID=Type=x=xend=y=yend <- NULL
+  Dim1=Dim2=ID=Type=x=xend=y=yend=Color <- NULL
 
   # Perform Correspondence Analysis
   ca_res <- ca(df)
@@ -110,9 +130,11 @@ caplot <- function(df, dims = c(1,2), ref.category, label.size = 3, equal.scale 
   if (ref.category %in% rownames(df)) {
     ref_coor <- row_coor
     other_coor <- col_coor
+    coor$Color <- ifelse(coor$Type == "Row" & !(coor$ID %in% ref.category), "grey", coor$Type)
   } else if (ref.category %in% colnames(df)) {
     ref_coor <- col_coor
     other_coor <- row_coor
+    coor$Color <- ifelse(coor$Type == "Column" & !(coor$ID %in% ref.category), "grey", coor$Type)
   } else {
     stop("ref.category must be a row or column name in df")
   }
@@ -137,21 +159,26 @@ caplot <- function(df, dims = c(1,2), ref.category, label.size = 3, equal.scale 
   )
 
   # Create dimension labels
-  xlab <- paste0("Dimension ", dims[1], " (Inertia: ", round(inertia1, 2), ", ", round(percentage1, 2), "%)")
-  ylab <- paste0("Dimension ", dims[2], " (Inertia: ", round(inertia2, 2), ", ", round(percentage2, 2), "%)")
+  xlab <- paste0("Dimension ", dims[1], " (Inertia: ", round(inertia1, 2), "; ", round(percentage1, 2), "%)")
+  ylab <- paste0("Dimension ", dims[2], " (Inertia: ", round(inertia2, 2), "; ", round(percentage2, 2), "%)")
+
+  # Define colors
+  color_values <- c("Row" = "red", "Column" = "blue", "grey" = "darkgrey")
 
   # Plot
   plot <- ggplot() +
     geom_hline(yintercept=0, linetype="dashed", linewidth = 0.25, color = "gray") +
     geom_vline(xintercept=0, linetype="dashed", linewidth = 0.25, color = "gray") +
     geom_abline(slope = tan(theta), intercept=0, color="black", linewidth = 0.30) +
-    geom_segment(data=segments_df, aes(x=x, y=y, xend=xend, yend=yend), linetype="dashed", linewidth = 0.30) +
-    geom_point(data=coor, aes(x=Dim1, y=Dim2, color=Type)) +
-    geom_text_repel(data=coor, aes(x=Dim1, y=Dim2, label=ID), size = label.size) +
+    geom_segment(data=segments_df, aes(x=x, y=y, xend=xend, yend=yend), linetype="dotted", linewidth = 0.30) +
+    geom_point(data=coor, aes(x=Dim1, y=Dim2, color=Color), size=dot.size) +
+    geom_text_repel(data=coor, aes(x=Dim1, y=Dim2, label=ID, color=Color), size = label.size) +
     theme(panel.background = element_rect(fill = "white", colour = "black"),
-          axis.title = element_text(size = axis.title.size), plot.title = element_text(size = 10)) +
+          axis.title = element_text(size = axis.title.size),
+          plot.title = element_text(size = 10),
+          legend.position = "none") + # No legend
     labs(title="Correspondence Analysis Scatterplot", x=xlab, y=ylab) +
-    scale_color_manual(values=c("blue", "red"))
+    scale_color_manual(values=color_values)
 
   if (equal.scale) {
     plot <- plot + coord_equal()

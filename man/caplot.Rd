@@ -8,9 +8,10 @@ caplot(
   df,
   dims = c(1, 2),
   ref.category,
+  dot.size = 2,
   label.size = 3,
-  equal.scale = TRUE,
-  axis.title.size = 8
+  axis.title.size = 8,
+  equal.scale = TRUE
 )
 }
 \arguments{
@@ -18,24 +19,28 @@ caplot(
 
 \item{dims}{A numeric vector specifying the dimensions to be plotted (default: c(1,2)).}
 
-\item{ref.category}{The reference category for interpreting the plot. Must be a row or column name of the input dataframe.}
+\item{ref.category}{The reference category for interpreting the plot. Must be a row or column name of the input dataframe.
+Note that, to enhance visual focus on the selected category, the other categories are rendered in grey.}
+
+\item{dot.size}{A numerical value representing the size of dots in the plot (default: 2)}
 
 \item{label.size}{A numerical value representing the size of labels in the plot (default: 3).}
 
-\item{equal.scale}{Logical value indicating whether to use the same scale for both axes (default: TRUE).}
-
 \item{axis.title.size}{A numerical value specifying the size of the axis titles (default: 8).}
+
+\item{equal.scale}{Logical value indicating whether to use the same scale for both axes (default: TRUE).}
 }
 \value{
 A scatterplot visualizing the results of the Correspondence Analysis with geometric frequency interpretation.
 }
 \description{
 This function performs Correspondence Analysis on the given data frame and plots the results in a scatterplot that emphasizes
-the geometric interpretation aspect of the analysis (Yelland 2010). It is particularly useful for highlighting the relationships between
-a selected row (or column) category and the column (or row) categories.
+the geometric interpretation aspect of the analysis (Borg-Groenen 2005; Yelland 2010). It is particularly useful for highlighting the relationships between
+a selected row (or column) category and the column (or row) categories.\cr
+Visit this \href{https://drive.google.com/file/d/1sZKPEqOqQ7VpfIn9DnGgdrS_K8p7cbvf/view?usp=share_link}{LINK} to access the package's vignette.\cr
 }
 \details{
-\strong{Overview}\cr The function follows a visualization approach outlined by Yelland 2010.
+\strong{Overview}\cr The function follows a visualization approach outlined, e.g., by Borg-Groenen 2005 and Yelland 2010.
 This method allows the relative frequencies of categories in the dataset to be intuitively read off the plot.
 The function first draws a line through the origin and the point corresponding to the selected reference category.
 Perpendicular lines are then dropped from each category’s position on the plot to the line connecting the reference category and the origin.
@@ -55,7 +60,7 @@ This method simplifies the understanding of some aspects of the data and can mak
 \examples{
 
 # EXAMPLE 1
-# Build a toy dataset (the famous Greenacre's "smoke" dataset)
+# Build a toy dataset (the famous Greenacre's "smoke" dataset).
 
 mytable <- structure(list(none = c(4, 4, 25, 18, 10), light = c(2, 3, 10,
 24, 6), medium = c(3, 7, 12, 33, 7), heavy = c(2, 4, 4, 13, 2
@@ -66,8 +71,8 @@ mytable <- structure(list(none = c(4, 4, 25, 18, 10), light = c(2, 3, 10,
 caplot(mytable, ref.category="heavy")
 
 # In the returned scatterplot, it can be seen that the JM and SM categories
-# feature a (comparatively) higher proportion of heavy smokers, whereas SC,
-# SE, and JE feature a smaller proportion.
+# feature a larger-than-average proportion of heavy smokers, whereas SC,
+# SE, and JE feature a smaller-than-average proportion.
 # Also, JM intersects the reference category line at a larger
 # distance compared to the SM category, which indicates that the proportion
 # of heavy smokers in JM is larger than in SM.
@@ -80,14 +85,31 @@ row_props <- round(prop.table(as.matrix(mytable), margin = 1),3)
 
 # EXAMPLE 2
 # Run the function using the "yelland" in-built dataset and "MT2" (Mark Twain 2)
-# as reference category, so reproducing the scatterplot in Yelland 2010, figure 4
+# as reference category, so reproducing the scatterplot in Yelland 2010, figure 4.
 
 caplot(yelland, ref.category="MT2", label.size=2)
+
+
+# EXAMPLE 3
+# Run the function using the "borggroenen" in-built dataset and "MA"
+# as reference category, so reproducing the scatterplot in Borg-Groenen 2005, figure 24.9.
+
+caplot(borggroenen, ref.category="MA", label.size=2)
+
+# As noted by Borg-Groenen 2005:
+# "the projections on the line through the origin and MA (Massachusetts)
+# show that auto theft and robbery happen more often than average.
+# Because larceny and burglary project almost on the origin,
+# they occur at an average rate in Massachusetts, whereas murder,
+# rape, and assault are below average."
 
 
 
 }
 \references{
+Borg, I., & Groenen, P. J. F. (2005). Modern Multidimensional Scaling: Theory and Applications.
+Springer Science & Business Media.
+
 Yelland, P. (2010). An Introduction to Correspondence Analysis.
  In The Mathematica Journal (Vol. 12). Wolfram Research, Inc.
 }

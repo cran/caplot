@@ -1,8 +1,12 @@
-8c345d344edc43ade66d00791a2d5a31 *DESCRIPTION
+620ff6e520fce5968bcd432412e14d72 *DESCRIPTION
 2ec579fabd7a113689d4d387161db86d *NAMESPACE
-f14399d436b51537e5cfd06140fb4e00 *R/ca_plot.R
+b9f3991f17d6839fe6b54e87eeda6ee3 *NEWS.md
+a2bab1fc29e672cbf4fbd44482035418 *R/borggroenen.r
+0167c8422e90a1e78f6703d22ebe13cc *R/ca_plot.R
 e2abdf42221bdba1dd2b6063a3212c67 *R/yelland.r
-276afff650f8afd04588398d309e05c6 *README.md
+c7fbd84752750a1efb1b40952ae64240 *README.md
+4340d717f8e2af255fe6fc3186dd9192 *data/borggroenen.rda
 6bc272e1db0faf408571b5efdb781ade *data/yelland.rda
-163dc47bdc60bc4b9f24664b73e9ec02 *man/caplot.Rd
+25797e5d2cd989ec147bcfe6fc314b53 *man/borggroenen.Rd
+965468c988673956c71479cd818f12e8 *man/caplot.Rd
 ff0789e9cf98969039652e5a233989a6 *man/yelland.Rd
